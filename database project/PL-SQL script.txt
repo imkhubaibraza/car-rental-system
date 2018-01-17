@@ -1,0 +1,460 @@
+create user car_rental1 identified by hr;
+grant dba to car_rental1;
+connect car_rental1/hr;
+CREATE TABLE BANK
+(
+  bank_id NUMBER(5) ,
+  Bank_name VARCHAR(50) ,
+  branch_code NUMBER(4) ,
+ constraint bank_bankid_pk PRIMARY KEY (bank_id),
+ constraint bank_bankname_nn check(bank_name is not null),
+ constraint bank_bankcode_nn check(branch_code is not null)
+);
+CREATE TABLE AGREEMENT_FINE
+(
+  fine_id NUMBER(5),
+  fine_days NUMBER(4) ,
+  amount_of_fine NUMBER(5) ,
+  CONSTRAINT AGREEMENTFINE_FINEID_PK PRIMARY KEY (fine_id),
+  CONSTRAINT agreementfine_fineid_nn check (fine_days is not null),
+   CONSTRAINTS agreementfine_AMOUNTOFFINE_nn check (AMOUNT_OF_FINE is not null)
+);
+  CREATE TABLE CAR_SPECS
+(
+  CAR_SPECS_ID NUMBER(5) ,
+  MAKERS_NAME VARCHAR(30),
+  MODEL_NUMBER VARCHAR(20) ,
+  YEAR_CAR  NUMBER(4),
+  COLOR VARCHAR(15) ,
+  SEATS_CAPACITY NUMBER(2) ,
+  CONSTRAINT CARSPECS_CARSPECSID_PK PRIMARY KEY (CAR_SPECS_ID),
+  CONSTRAINT CARSPECS_MAKERSNAME_NN CHECK(MAKERS_NAME IS NOT NULL),
+  CONSTRAINT CARSPECS_MODELNUMBER_NN CHECK(MODEL_NUMBER IS NOT NULL),
+  CONSTRAINT CARSPECS_YEAR_CAR_NN CHECK(YEAR_CAR IS NOT NULL),
+  CONSTRAINT CARSPECS_SEATSCAPACITY_NN CHECK(SEATS_CAPACITY IS NOT NULL),
+   CONSTRAINT CARSPECS_COLOR_NN CHECK (COLOR IS NOT NULL)
+);
+  CREATE TABLE CAR_TYPE
+(
+  CAR_TYPE_ID VARCHAR(3) ,
+  TYPE_NAME VARCHAR(15),
+  PRICE_PER_DAY NUMBER(8,2) ,
+  FINE_PER_HOUR NUMBER(8,2) ,
+  CONSTRAINT CARTYPE_CARTYPEID_PK PRIMARY KEY (CAR_TYPE_ID),
+   constraint  CARTYPE_TYPENAME_NN CHECK(TYPE_NAME IS NOT NULL),
+    CONSTRAINT CARTYPE_PRICEPERDAY_NN CHECK (PRICE_PER_DAY IS NOT NULL),
+     CONSTRAINT CARTYPE_FINEPERHOUR_NN CHECK (FINE_PER_HOUR IS NOT NULL)
+);
+CREATE TABLE CITY
+(
+  city_id  VARCHAR(3) ,
+  city_name VARCHAR(50) ,
+  CONSTRAINT CITY_CITYID_PK PRIMARY KEY (city_id),
+  CONSTRAINT CITY_CITYNAME_UK UNIQUE(CITY_NAME),
+  CONSTRAINT CITY_CITYNAME_NN CHECK(CITY_NAME IS NOT NULL)
+);
+ CREATE TABLE LOCATION
+(
+  location_id  NUMBER(5),
+  zipcode number(5) ,
+  street VARCHAR(40) ,
+  city_id VARCHAR(3),
+  CONSTRAINT LOCATION_LOCATIONID_PK PRIMARY KEY (location_id),
+  CONSTRAINT LOCATION_CITYID_FK FOREIGN KEY (city_id) REFERENCES CITY(city_id),
+   CONSTRAINT LOCATION_ZIPCODE_NN CHECK(ZIPCODE IS NOT NULL),
+   CONSTRAINT LOCATION_STREET_NN CHECK(STREET IS NOT NULL)
+);
+CREATE TABLE OFFICE
+(
+  OFFICE_ID  NUMBER(5),
+  OFFICE_NAME VARCHAR(30),
+  PHONE_NO number(11) ,
+  address number(5) ,
+   CONSTRAINT OFFICE_OFFICEID_PK PRIMARY KEY (OFFICE_ID),
+   CONSTRAINT OFFICE_ADDRESS_FK FOREIGN KEY (address) REFERENCES LOCATION(location_id),
+   CONSTRAINT OFFICE_OFFICENAME_NN CHECK (OFFICE_NAME IS NOT NULL),
+   CONSTRAINT OFFICE_PHIONENO_NN CHECK (PHONE_NO IS NOT NULL),
+   CONSTRAINT OFFICE_ADDRESS_NN CHECK (address IS NOT NULL)
+);
+CREATE TABLE MANAGER
+(
+  MANAGER_ID  NUMBER(5) ,
+  first_NAME VARCHAR(20),
+  last_name VARCHAR(20),
+  SHIFT VARCHAR(10),
+  DOB DATE,
+  AGE NUMBER(3) ,
+  CNIC CHAR(13),
+  EMAIL VARCHAR(40) ,
+  OFFICE_ID  NUMBER(5),
+   CONSTRAINT MANAGER_MANAGERID_NN PRIMARY KEY (MANAGER_ID),
+   CONSTRAINT MANAGER_MANAGERID_FK FOREIGN KEY (OFFICE_ID) REFERENCES OFFICE(OFFICE_ID),
+     CONSTRAINT MANAGER_OFFICEID_NN CHECK(OFFICE_ID IS NOT NULL),
+    CONSTRAINT MANAGER_FIRSTNAME_NN CHECK(FIRST_NAME IS NOT NULL),
+   CONSTRAINT MANAGER_LASTNAME_NN CHECK(LAST_NAME IS NOT NULL),
+   CONSTRAINT MANAGER_SHIFT_NN CHECK(SHIFT IS NOT NULL),
+    CONSTRAINT MANAGER_CNIC_NN CHECK(CNIC IS NOT NULL),
+     CONSTRAINT MANAGER_DOB_NN CHECK(DOB IS NOT NULL),
+   CONSTRAINT MANAGER_EMAIL_NN CHECK (EMAIL IS NOT NULL)
+);
+  CREATE TABLE DRIVER
+(
+  driver_id  NUMBER(5) ,
+  first_name VARCHAR(20),
+  last_name VARCHAR(20) ,
+  license_no CHAR(18) ,
+  experiance VARCHAR(10) ,
+  charges_per_day NUMBER(4) ,
+  license_expiry DATE ,
+  OFFICE_ID NUMBER(5),
+  CONSTRAINT DRIVER_DRIVERID_PK PRIMARY KEY (driver_id),
+  CONSTRAINT DRIVER_DRIVERID_FK FOREIGN KEY (OFFICE_ID) REFERENCES OFFICE(OFFICE_ID),
+  CONSTRAINT DRIVER_FIRSTNAME_NN CHECK(FIRST_NAME IS NOT NULL),
+  CONSTRAINT DRIVER_LASTNAME_NN CHECK (LAST_NAME IS NOT NULL),
+  CONSTRAINT DRIVER_LICENSENO_UK UNIQUE(license_no),
+  CONSTRAINT DRIVER_CHARGESPERDAY_NN  CHECK (CHARGES_PER_DAY IS NOT NULL),
+ CONSTRAINT DRIVER_licenseEXPIRY_NN CHECK(license_EXPIRY IS NOT NULL)
+);
+CREATE TABLE CUSTOMER
+(
+ CUSTOMER_ID  NUMBER(5),
+ FIRST_NAME VARCHAR(20) ,
+  LAST_NAME VARCHAR(20),
+  MIDDLE_NAME VARCHAR(20),
+  PHONE_NO NUMBER(11) ,
+  EMAIL VARCHAR(100),
+  DOB DATE ,
+  OCCUPATION VARCHAR(30) ,
+  CNIC NUMBER(13),
+  ADDRESS NUMBER(5) ,
+   CONSTRAINT customer_customerid_pk PRIMARY KEY (CUSTOMER_ID),
+   CONSTRAINT CUSTOMER_ADDRESS_FK FOREIGN KEY (address) REFERENCES LOCATION(location_id),
+   CONSTRAINT CUSTOMER_FIRSTNAME_NN CHECK(FIRST_NAME IS NOT NULL),
+   CONSTRAINT CUSTOMER_LASTNAME_NN CHECK(LAST_NAME IS NOT NULL), 
+   CONSTRAINT CUSTOMER_OCCUPATION_NN CHECK(OCCUPATION IS NOT NULL),
+   CONSTRAINT CUSTOMER_CNIC_NN CHECK(CNIC IS NOT NULL),
+   CONSTRAINT CUSTOMER_ADDRESS_NN CHECK (ADDRESS IS NOT NULL),
+   CONSTRAINT CUSTOMER_PHONENO_NN CHECK (PHONE_NO IS NOT NULL),
+   CONSTRAINT CUSTOMER_EMAIL_NN CHECK (EMAIL IS NOT NULL)
+);
+CREATE TABLE CAR_AGREEMENT_BANK
+(
+  agreement_bank_id  NUMBER(5),
+  advnace_amount NUMBER(10,2) ,
+  total_amount NUMBER(10,2) ,
+  total_fine NUMBER(10,2) ,
+  total_installments NUMBER(5) ,           
+  start_date DATE ,
+  end_date DATE ,
+  OFFICE_ID  NUMBER(5),
+  bank_id  NUMBER(5),
+   CONSTRAINT CAR_AGREEMENT_BANKID_PK PRIMARY KEY (agreement_bank_id),
+   CONSTRAINT CAR_AGREEMENT_OFFICEID_FK FOREIGN KEY (OFFICE_ID) REFERENCES OFFICE(OFFICE_ID),
+   CONSTRAINT CAR_AGREEMENT_BANKID_FK FOREIGN KEY (bank_id) REFERENCES BANK(bank_id)
+);
+CREATE TABLE INSTALLMENTS
+(
+ installments_id  NUMBER(5) ,
+  current_date DATE ,
+  status VARCHAR(12) ,
+  amount_paid  NUMBER(10,2) ,
+  last_date DATE ,
+  fine_id  NUMBER(5),
+  agreement_bank_id  NUMBER(5),
+  CONSTRAINT INSTALLEMNTS_INSTALLEMNTID_PK PRIMARY KEY (installments_id),
+  CONSTRAINT INSTALLEMNTS_FINEID_FK  FOREIGN KEY (fine_id) REFERENCES AGREEMENT_FINE(fine_id),
+   CONSTRAINT INSTALLEMNTS_AGREEMENTBANKI_FK FOREIGN KEY (agreement_bank_id) REFERENCES CAR_AGREEMENT_BANK(agreement_bank_id),
+   CONSTRAINT INSTALLEMNTS_AGREEMENTBANKI_NN CHECK (AGREEMENT_BANK_ID IS NOT NULL),
+   CONSTRAINT INSTALLEMNTS_LASTDATE_NN CHECK (LAST_DATE IS NOT NULL),
+    CONSTRAINT INSTALLEMNTS_AMOUNTPAID_NN CHECK (AMOUNT_PAID IS NOT NuLL),
+    CONSTRAINT INSTALLEMNTS_STATUS_NN CHECK (STATUS IS NOT NULL)
+); 
+CREATE TABLE CAR_OWNER
+(
+  FIRST_NAME VARCHAR(20),
+  LAST_NAME VARCHAR(20) ,
+  MIDDLE_NAME VARCHAR(20) ,
+  DOB DATE ,
+  EMAIL VARCHAR(100),
+  CNIC NUMBER(13),
+  GENDER  varchar(6),
+  OCCUPATION VARCHAR(30),
+  owner_id  NUMBER(5) ,
+  PHONE_NO NUMBER(11),
+  ADDRESS  NUMBER(5),
+   CONSTRAINT CAROWNER_OWNERID_PK PRIMARY KEY (owner_id),
+   CONSTRAINT CAROWNER_ADDRESS_FK FOREIGN KEY (ADDRESS) REFERENCES LOCATION(location_id),
+   CONSTRAINT CAROWNER_FIRSTNAME_NN CHECK(FIRST_NAME IS NOT NULL),
+   CONSTRAINT CAROWNER_LASTNAME_NN CHECK(LAST_NAME IS NOT NULL), 
+   CONSTRAINT CAROWNER_OCCUPATION_NN CHECK(OCCUPATION IS NOT NULL),
+   CONSTRAINT CAROWNER_CNIC_NN CHECK(CNIC IS NOT NULL),
+   CONSTRAINT CAROWNER_ADDRESS_NN CHECK (ADDRESS IS NOT NULL),
+   CONSTRAINT CAROWNER_PHONENO_NN CHECK (PHONE_NO IS NOT NULL),
+   CONSTRAINT CAROWNER_GENDER_NN CHECK (GENDER IS NOT NULL),
+   CONSTRAINT CAROWNER_EMAIL_NN CHECK (EMAIL IS NOT NULL)
+);
+CREATE TABLE COTRACT_OWNER
+(
+  CONTRACT_ID  NUMBER(5) ,
+  start_date DATE ,
+  end_date DATE ,
+  total_pay NUMBER(10,2) ,
+  status VARCHAR(12) ,
+  OFFICE_ID  NUMBER(5) ,
+  owner_id  NUMBER(5),
+   CONSTRAINT CONTRACTOWNER_CONTRACTID_PK PRIMARY KEY (CONTRACT_ID),
+   CONSTRAINT CONTRACTOWNER_OFFICEID_FK FOREIGN KEY (OFFICE_ID) REFERENCES OFFICE(OFFICE_ID),
+   CONSTRAINT CONTRACTOWNER_OWNERID_FK FOREIGN KEY (owner_id) REFERENCES CAR_OWNER(owner_id),
+   CONSTRAINT CONTRACTOWNER_OWNERID_NN CHECK (OWNER_ID IS NOT NULL),
+   CONSTRAINT CONTRACTOWNER_OFFICEID_NN CHECK (OFFICE_ID IS NOT NULL),
+   CONSTRAINT CONTRACTOWNER_CONTRACTID_NN CHECK (CONTRACT_ID IS NOT NULL),
+    CONSTRAINT CONTRACTOWNER_STARTDATE_NN CHECK(START_DATE IS NOT NULL),
+    CONSTRAINT CONTRACTOWNER_ENDDATE_NN CHECK(END_DATE IS NOT NULL),
+    CONSTRAINT CONTRACTOWNER_TOTALPAY_NN CHECK(TOTAL_PAY IS NOT NULL),
+    CONSTRAINT CONTRACTOWNER_STATUS_NN CHECK(STATUS IS NOT NULL) 
+);
+CREATE TABLE CAR
+(
+  UIN CHAR(17) ,
+  CAR_TYPE_ID VARCHAR(3),
+  CAR_SPECS_ID  NUMBER(5),
+  owner_id  NUMBER(5),
+  AGREEMENT_BANK_ID NUMBER(5),
+   CONSTRAINT CAR_UIN_PK PRIMARY KEY (UIN),
+   CONSTRAINT CAR_CARTYPEID_FK FOREIGN KEY (CAR_TYPE_ID) REFERENCES CAR_TYPE(CAR_TYPE_ID),
+   CONSTRAINT CAR_CARAGREEMENT_ID_FK FOREIGN KEY (AGREEMENT_BANK_ID) REFERENCES CAR_AGREEMENT_BANK(AGREEMENT_BANK_ID),
+   CONSTRAINT CAR_CARSPECS_FK FOREIGN KEY (CAR_SPECS_ID) REFERENCES CAR_SPECS(CAR_SPECS_ID),
+   CONSTRAINT CAR_OWNERID_FK FOREIGN KEY (owner_id) REFERENCES CAR_OWNER(owner_id),
+   CONSTRAINT CAR_CARTYPEID_NN CHECK (CAR_TYPE_ID IS NOT NULL),
+   CONSTRAINT CAR_CARSPECS_NN CHECK (CAR_SPECS_id IS NOT NULL),
+   CONSTRAINT CAR_OWNERID_NN CHECK (OWNER_ID IS NOT NULL)
+);
+CREATE TABLE RESERVATION
+(
+  RESERVATION_ID  NUMBER(5),
+  STATUS VARCHAR(12) ,
+  METER_BEFORE number(10,2) ,
+  METER_AFTER number(10,2) ,
+  START_TIME_DATE TIMESTAMP,
+  END_TIME_DATE TIMESTAMP,
+  actual_end_time_date timestamp,
+  CUSTOMER_ID NUMBER(5) ,
+  UIN CHAR(17),
+  driver_id NUMBER(5),
+  PICKUP_LOCATION NUMBER(5) ,
+  dropoff_location NUMBER(5) ,
+   CONSTRAINT RESERVATION_RESERVATIONID_PK PRIMARY KEY (RESERVATION_ID),
+   CONSTRAINT RESERVATION_CUSTOMERID_FK FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMER(CUSTOMER_ID),
+   CONSTRAINT RESERVATION_UIN_FK FOREIGN KEY (UIN) REFERENCES CAR(UIN),
+   CONSTRAINT RESERVATION_DRIVERID_FK FOREIGN KEY (driver_id) REFERENCES DRIVER(driver_id),
+   CONSTRAINT RESERVATION_PICKUPLOCATION_FK FOREIGN KEY (PICKUP_LOCATION) REFERENCES LOCATION(location_id),
+   CONSTRAINT RESERVATION_DROPOFFLOCATION_FK FOREIGN KEY (dropoff_location) REFERENCES LOCATION(location_id),
+   CONSTRAINT RESERVATION_CUSTOMERID_NN CHECK( CUSTOMER_ID IS NOT  NULL),
+   CONSTRAINT RESERVATION_UIN_NN CHECK (UIN IS NOT NULL),
+   CONSTRAINT RESERVATION_DRIVERID_NN CHECK (DRIVER_ID IS NOT NULL),
+     CONSTRAINT RESERVATION_PICKUPLOCATION_NN CHECK (PICKUP_LOCATION IS NOT NULL),
+      CONSTRAINT RESERVATION_DROPOFFLOCATION_NN CHECK (dropoff_location IS NOT NULL),
+   CONSTRAINT RESERVATION_STATUS_NN CHECK (STATUS IS NOT NULL),
+   CONSTRAINT RESERVATION_METERBEFORE_NN CHECK (METER_BEFORE IS NOT NULL),
+   CONSTRAINT RESERVATION_METERAFTER_NN CHECK (METER_AFTER IS NOT NULL),
+   CONSTRAINT RESERVATION_STARTTIMEDATE_NN CHECK (START_TIME_DATE IS NOT NULL),
+   CONSTRAINT RESERVATION_ENDTIMEDATE_NN CHECK (END_TIME_DATE IS NOT NULL)
+);
+CREATE TABLE BILLING
+(
+  bill_id NUMBER(5) ,
+  bill_time_date TIMESTAMP ,
+  bill_status VARCHAR(12) ,
+  total_amount NUMBER(8,2),
+  total_fine NUMBER(8,2) ,
+  total_driver_charges NUMBER(8,2) ,
+  RESERVATION_ID NUMBER(5),
+  bill_total number(8,2) ,
+  CONSTRAINT BILLING_BILLID_PK PRIMARY KEY (bill_id),
+  CONSTRAINT BILLING_RESERVATIONID_FK FOREIGN KEY (RESERVATION_ID) REFERENCES RESERVATION(RESERVATION_ID)
+);
+-- Create sequence 
+create sequence bankSEQ
+minvalue 100
+maxvalue 99999
+start with 100
+increment by 1
+nocache;
+-- Create sequence 
+create sequence installmentsSEQ
+minvalue 1
+maxvalue 99999
+start with 1
+increment by 1
+nocache;
+-- Create sequence 
+create sequence car_specsSEQ
+minvalue 1
+maxvalue 99999
+start with 1
+increment by 1
+nocache;
+-- Create sequence 
+create sequence locationSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+-- Create sequence 
+create sequence officeSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+-- Create sequence 
+create sequence managerSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+-- Create sequence 
+create sequence driverSEQ
+minvalue 100
+maxvalue 99999
+start with 100
+increment by 1
+nocache;
+-- Create sequence 
+create sequence customerSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+-- Create sequence 
+create sequence car_agreement_bankSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+-- Create sequence 
+create sequence car_ownerSEQ
+minvalue 1
+maxvalue 99999
+start with 1
+increment by 1
+nocache;
+-- Create sequence 
+create sequence contract_ownerSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+-- Create sequence 
+create sequence reservationSEQ
+minvalue 1
+maxvalue 99999
+start with 1
+increment by 1
+nocache;
+-- Create sequence 
+create sequence billingSEQ
+minvalue 1000
+maxvalue 99999
+start with 1000
+increment by 1
+nocache;
+----------------------------------------
+insert into bank values(bankseq.nextval,'HBL',0001);
+insert into  bank values(bankseq.nextval,'Alphla',0002);
+insert into  bank values(bankseq.nextval,'TTPT',0003);
+insert into  bank values(bankseq.nextval,'HBL',0001);
+------------------------------
+insert into  agreement_fine values(1,10,100);
+insert into  agreement_fine values(2,30,500);
+-----------------------------
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'HONDA','CIVIC',2017,'PURPLE',5);
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'FORD','FOCUS',2015,'BLACK',2);
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'MARCEDES','BENZ',2017,'WHITE',5);
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'HONDA','CITY',2017,'RED',5);
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'HONDA','ACCORD',2010,'BLUE',5);
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'TOYOTA','CORROLA',2014,'PURPLE',5);
+INSERT INTO CAR_SPECS VALUES(car_specsSEQ.nextval,'SUZUKI','MEHRAN',2014,'GREY',5);
+------------------------------------
+insert into  city values('LHR','LAHORE');
+insert into  city values('ISB','ISLAMABDAD');
+insert into  city values('KAR','KARACHI');
+insert into  city values('FSB','FAISALABAD');
+insert into  city values('GUJ','GUJRAT');
+-----------------------------
+insert into  location values(locationSEQ.nextval,54585,'ZAFAR SAYED','LHR');
+insert into  location values(locationSEQ.nextval,54000,' DRAMA STREET','FSB');
+insert into  location values(locationSEQ.nextval,54585,'ZAFAR FOJI','KAR');
+insert into  location values(locationSEQ.nextval,54400,' WALA ','ISB');
+insert into  location values(locationSEQ.nextval,12344,'ZAFAR GALI MAHALA','GUJ');
+insert into  location values(locationSEQ.nextval,54300,'ROAD ','LHR');
+insert into  location values(locationSEQ.nextval,54585,'CHACHO SAYED','KAR');
+insert into  location values(locationSEQ.nextval,54000,'ZAFAR PAI','FSB');
+insert into  location values(locationSEQ.nextval,54585,' SAYED','LHR');
+insert into  location values(locationSEQ.nextval,5500,' DRAMA STREET','FSB');
+insert into  location values(locationSEQ.nextval,54585,' FOJI','KAR');
+insert into  location values(locationSEQ.nextval,54400,'PAN  ','ISB');
+insert into  location values(locationSEQ.nextval,14544,'ZAFAR GALI MAHALA','GUJ');
+insert into  location values(locationSEQ.nextval,56982,'ROAD ','LHR');
+insert into  location values(locationSEQ.nextval,54585,'CHACHO ','KAR');
+insert into  location values(locationSEQ.nextval,54000,'ZAFAR PAI','FSB');
+----------------------------
+insert into  office values(officeSEQ.Nextval,'bhai',03154673239,1013);
+insert into  office values(officeSEQ.Nextval,'saein',03221546739,1014);
+insert into  office values(officeSEQ.Nextval,'bro',03021546739,1015);
+insert into  office values(officeSEQ.Nextval,'gumman',030215467,1007);
+----------------------------
+insert into  manager values(managerSEQ.Nextval,'faisal','ahmed','morning',to_timestamp('2015-4-12' , 'YYYY-MM-DD'),13,3520214549158,'saka@gmail.com',1000);
+insert into  manager values(managerSEQ.Nextval,'baig','reema','morning',to_timestamp('2015-4-12' , 'YYYY-MM-DD'),13,3520214549158,'jaka@gmail.com',1001);
+insert into  manager values(managerSEQ.Nextval,'faisal','cheema','morning',to_timestamp('2015-4-12' , 'YYYY-MM-DD'),13,3520214549158,'kaka@gmail.com',1002);
+insert into  manager values(managerSEQ.Nextval,'faisal','beema','morning',to_timestamp('2015-4-12' , 'YYYY-MM-DD'),13,3520214549158,'raka@gmail.com',1003);
+--------------------------------
+insert into  driver values(driverSEQ.nextval,'ahmed','arshad','a15le','2years',2000,to_timestamp('2018-4-21' , 'YYYY-MM-DD'),1000);
+insert into  driver values(driverSEQ.nextval,'reema','arshad','a125le','2years',2000,to_timestamp('2018-4-21' , 'YYYY-MM-DD'),1001);
+insert into  driver values(driverSEQ.nextval,'saad','arshad','a1','2years',2000,to_timestamp('2018-4-21' , 'YYYY-MM-DD'),1003);
+insert into  driver values(driverSEQ.nextval,'cheema','arshad','a12345le','2years',2000,to_timestamp('2018-4-21' , 'YYYY-MM-DD'),1002);
+---------------------------------
+insert into    customer values(customerSEQ.Nextval,'micheal','khalid','arfan',03025415612,'irfanakrma@gmail.com',to_timestamp('2018-8-8' , 'YYYY-MM-DD'),'bussinessman',3520256758903,1001);
+insert into    customer values(customerSEQ.Nextval,'raka','jma','arfan',03025415612,'irfanakrma@gmail.com',to_timestamp('2018-8-8' , 'YYYY-MM-DD'),'teacher',3520256758903,1002);
+insert into    customer values(customerSEQ.Nextval,'jaikal','sama','arfan',03025415612,'irfanakrma@gmail.com',to_timestamp('2018-8-8' , 'YYYY-MM-DD'),'bussinessman',3520256758903,1003);
+insert into    customer values(customerSEQ.Nextval,'saka','khalid','arfan',03025415612,'irfanakrma@gmail.com',to_timestamp('2018-8-8' , 'YYYY-MM-DD'),'teacher',3520256758903,1004);
+-------------------------------------
+insert into    car_agreement_bank values(car_agreement_bankSEQ.Nextval,20200,109000,3010,300,Sysdate-1000,Sysdate-800,1001,100);
+insert into    car_agreement_bank values(car_agreement_bankSEQ.Nextval,20200,1080000,3100,900,Sysdate-1000,Sysdate-800,1002,101);
+insert into    car_agreement_bank values(car_agreement_bankSEQ.Nextval,2000,100050,3000,300,Sysdate-100,Sysdate-80,1002,102);
+----------------------------------
+insert into  installments values(installmentsSEQ.Nextval,sysdate-500,'paid',1500,sysdate-500,1,1000);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-200,'paid',1500,sysdate-500,1,1000);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-100,'paid',1500,sysdate-500,2,1000);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-50,'paid',1500,sysdate-500,2,1000);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-10,'paid',1500,sysdate-500,1,1001);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-500,'paid',1500,sysdate-500,2,1001);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-200,'paid',1500,sysdate-500,1,1002);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-100,'paid',1500,sysdate-200,2,1002);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-50,'paid',1500,sysdate-10,1,1002);
+insert into  installments values(installmentsSEQ.Nextval,sysdate-10,'paid',1500,sysdate-50,2,1002);
+----------------------------------
+insert into    car_owner values('amir','arfan','aslam',to_timestamp('2015-7-21' , 'YYYY-MM-DD'),'zunaira123@gmail.com',352021435718,'male','business',car_ownerSEQ.nextval,03225476891,1007);
+insert into    car_owner values('amir','arfan','aslam',to_timestamp('2015-7-21' , 'YYYY-MM-DD'),'zunaira123@gmail.com',352021435718,'male','teacher',car_ownerSEQ.nextval,03225476891,1006);
+----------------------------------
+insert into    cotract_owner values(contract_ownerSEQ.nextval,to_timestamp('2015-3-21' , 'YYYY-MM-DD'),to_timestamp('2015-3-28' , 'YYYY-MM-DD'),3000000,'notpaid',1002,1);
+insert into    cotract_owner values(contract_ownerSEQ.nextval,to_timestamp('2015-3-21' , 'YYYY-MM-DD'),to_timestamp('2015-3-28' , 'YYYY-MM-DD'),3000000,'notpaid',1003,2);
+---------------------------------------------
+INSERT INTO CAR_TYPE VALUES('LUX','LUXURY',30000,1500);
+INSERT INTO CAR_TYPE VALUES('ECO','ECONOMY',10000,500);
+INSERT INTO CAR_TYPE VALUES('BUS','BUSSINESS',20000,1000);
+----------------------------------
+insert into    car values('a123456789101112','LUX',1,1,1000);
+insert into    car values('a123456789101113','ECO',2,1,1001);
+insert into    car values('a123456789101114','BUS',3,1,1002);
+--------------------------------------------
+insert into    reservation values(reservationSEQ.Nextval,'paid',100000,20000,to_timestamp('2015-4-21 2:30:56', 'YYYY-MM-DD hh24:mi:ss'),to_timestamp('2015-4-25 4:30:56', 'YYYY-MM-DD hh24:mi:ss'),to_timestamp('2015-4-25 4:30:56', 'YYYY-MM-DD hh24:mi:ss'),1000,'a123456789101112',101,1001,1003);
+insert into    reservation values(reservationSEQ.Nextval,'paid',100000,20000,to_timestamp('2015-4-20 2:30:20', 'YYYY-MM-DD hh24:mi:ss'),to_timestamp('2015-4-29 4:30:20', 'YYYY-MM-DD hh24:mi:ss'),to_timestamp('2015-4-29 4:30:20', 'YYYY-MM-DD hh24:mi:ss'),1001,'a123456789101113',102,1002,1005);
+-------------------------------------------
+insert into    billing values(billingSEQ.Nextval,to_timestamp('2018-7-21 6:30:57', 'YYYY-MM-DD hh24:mi:ss'),'paid',34000,2000,1000,1,5000);
+insert into    billing values(billingSEQ.Nextval,to_timestamp('2018-7-21 6:30:57', 'YYYY-MM-DD hh24:mi:ss'),'paid',34000,2000,1000,2,8000);
